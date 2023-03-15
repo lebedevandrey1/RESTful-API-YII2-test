@@ -1,0 +1,13 @@
+Options +FollowSymLinks
+Options -Indexes
+RewriteEngine On
+
+# End the processing, if a rewrite already occurred
+RewriteCond %{ENV:REDIRECT_STATUS} !^$
+RewriteRule ^ - [L]
+
+RewriteCond %{HTTP_HOST} api\.ЗДЕСЬ_ДОМЕН_САЙТА\.com
+RewriteRule .* restful/web/$0 [L]
+
+# handle the case of frontend
+RewriteRule .* frontend/web/$0 [L]

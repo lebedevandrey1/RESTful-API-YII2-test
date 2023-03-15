@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+
+  frontend:
+    container_name: frontend
+    build: frontend
+    ports:
+      - 8000:80
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    restart: on-failure
+
+  restful:
+    container_name: restful
+    build: restful
+    ports:
+      - 8001:80
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+    volumes:
+      - ./developer/mysql/db:/var/lib/mysql
+      - ./developer/mysql/logs:/var/log/mysql
+      - ./developer/mysql/mysql-dump:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
